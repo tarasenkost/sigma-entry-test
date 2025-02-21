@@ -3,6 +3,12 @@ terraform/.terraform/
 terraform/.terraform.lock.hcl
 terraform/.terraform.tfstate.lock.info
 
+# Ignore all .terraform directories recursively
+**/.terraform/
+**/.terraform.lock.hcl
+**/.terraform.tfstate.lock.info
+
+
 # Terraform state files
 terraform/terraform.tfstate
 terraform/terraform.tfstate.*

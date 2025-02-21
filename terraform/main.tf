@@ -80,9 +80,9 @@ module "key_vaults" {
   source = "./modules/key-vault"
   enable = local.install_base
 
-  location            = local.location
-  tenant_id           = local.tenant_id
-  resource_group_name = module.resource_group.name
+  location                       = local.location
+  tenant_id                      = local.tenant_id
+  resource_group_name            = module.resource_group.name
   name_random_suffix_byte_lenght = 3
   key_vaults = [
     {
