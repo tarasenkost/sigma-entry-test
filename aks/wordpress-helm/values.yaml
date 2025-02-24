@@ -1,0 +1,94 @@
+image:
+  repository: bitnami/wordpress-nginx
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+pvcs:
+  wordpress:
+    accessModes: 
+    - ReadWriteOnce
+    storageClassName: managed-csi
+    size: 2Gi
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-body-size: 80m
+  hosts:
+    - host: sigma.starasenko.pp.ua
+      paths:
+      - serviceName: wordpress
+        servicePort: 80
+  tls:
+  - hosts:
+      - sigma.starasenko.pp.ua
+    secretName: wordpress-tls
+
+service:
+  name: wordpress
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+  - name: https
+    port: 443
+    targetPort: 8443
+
+deployment:
+  replicas: 1 
+  serviceAccountName: {}
+  securityContext: 
+    fsGroup: 0
+    runAsUser: 1
+  nodeSelector:
+    app: wordpress
+
+  wpcontainer: 
+    resources:
+      limits:
+        memory: "256Mi"
+        cpu: "250m"  
+      requests:
+        memory: "256Mi"
+        cpu: "100m"
+    envFrom:
+    - secretRef:
+        name: wordpress-secrets
+    - configMapRef:
+        name: wordpress-env        
+    volumeMounts:
+    - name: wordpress-data
+      mountPath: /bitnami/wordpress    
+  volumes:
+  - name: wordpress-data
+    persistentVolumeClaim:
+      claimName: wordpress
+
+
+mariadb:
+  enabled: true
+  architecture: standalone
+  auth:
+    existingSecret: mariadb-secrets
+  initdbScriptsConfigMap: mariadb-initdb-scripts
+  primary:
+    nodeSelector: 
+      app: mariadb
+    service:
+      ports:
+        db: 3306
+    persistence:
+      enabled: true
+      storageClass: managed-csi
+      size: 1Gi
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "100m"
+      limits:
+        memory: "512Mi"
+        cpu: "250m"

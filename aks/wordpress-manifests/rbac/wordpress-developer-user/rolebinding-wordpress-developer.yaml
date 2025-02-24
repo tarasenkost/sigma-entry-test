@@ -1,0 +1,14 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  creationTimestamp: "2025-02-21T13:57:13Z"
+  name: wordpress-developer-rolebinding
+  namespace: wordpress
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: wordpress-developer
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: wordpress-developer

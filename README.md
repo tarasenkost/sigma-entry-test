@@ -1,0 +1,1 @@
+WP deployment: https://sigma.starasenko.pp.ua/

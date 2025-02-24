@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wordpress-env
+data:
+  WORDPRESS_DATABASE_NAME: tarasenkost
+  WORDPRESS_DATABASE_HOST: mariadb
+  WORDPRESS_ENABLE_REVERSE_PROXY: "yes"
+  WORDPRESS_ENABLE_HTTPS: "yes"

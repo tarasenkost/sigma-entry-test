@@ -35,3 +35,6 @@ terraform/*.auto.tfvars.json
 # Optionally, if your aks folder contains local changes you don't want tracked, you can add:
 # aks/
 
+bckps/
+aks/wordpress-helm/charts/
+aks/wordpress-helm/secrets/

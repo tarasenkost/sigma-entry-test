@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wordpress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-body-size: 80m
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - wordpress.starasenko.pp.ua
+    secretName: wordpress-tls
+  rules:
+   - host: wordpress.starasenko.pp.ua
+     http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: wordpress
+                port:
+                  number: 80
+
+
+
+
+
+                  

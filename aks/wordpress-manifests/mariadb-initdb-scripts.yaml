@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mariadb-initdb-scripts #required for bitnami mariadb only
+  namespace: wordpress 
+data:
+  init-users.sh: |
+    #!/bin/sh
+    mysql -P 3306 -uroot -p"$MARIADB_ROOT_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS tarasenkost;" 
+    mysql -P 3306 -uroot -p"$MARIADB_ROOT_PASSWORD" -e "CREATE USER IF NOT EXISTS 'tarasenkost'@'%' IDENTIFIED BY 'tarasenkost';"
+    mysql -P 3306 -uroot -p"$MARIADB_ROOT_PASSWORD" -e "GRANT ALL PRIVILEGES ON tarasenkost.* TO 'tarasenkost'@'%';"
+    mysql -P 3306 -uroot -p"$MARIADB_ROOT_PASSWORD" -e "FLUSH PRIVILEGES;"

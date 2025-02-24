@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress
+  labels:
+    app: wordpress
+spec:
+  selector:
+    matchLabels:
+      app: wordpress
+  template:
+    metadata:
+      labels:
+        app: wordpress
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - wordpress
+      securityContext:
+        runAsUser: 1
+        fsGroup: 0
+      containers:
+      - name: wordpress
+        image: bitnami/wordpress-nginx:latest
+        imagePullPolicy: Always
+        envFrom:
+        - secretRef:
+            name: wordpress-secrets
+        - configMapRef:
+            name: wordpress-env
+        ports:
+        - containerPort: 8443
+        - containerPort: 8080
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "250m"        
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 6
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 6
+        volumeMounts:
+        - name: wordpress-data
+          mountPath: /bitnami/wordpress
+      volumes:
+      - name: wordpress-data
+        persistentVolumeClaim:
+          claimName: wordpress
+
+
+
+

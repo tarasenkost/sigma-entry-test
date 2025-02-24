@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db
+  labels:
+    app: mariadb
+spec:
+  selector:
+    matchLabels:
+      app: mariadb
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - mariadb
+      containers:
+      - name: mariadb
+        image: mariadb:lts
+        envFrom:
+        - secretRef:
+            name: mariadb-secrets
+        ports:
+        - containerPort: 3306
+          name: mariadb
+        resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "250m"      
+        livenessProbe:
+          exec:
+            command:
+              - "sh"
+              - "-c"
+              - "mariadb-admin --user=$${MARIADB_USER} --password=$${MARIADB_PASSWORD} --host=localhost ping"
+          initialDelaySeconds: 60  
+          periodSeconds: 30         
+          timeoutSeconds: 5         
+          failureThreshold: 6
+        readinessProbe:
+          exec:
+            command:
+              - "sh"
+              - "-c"
+              - "mariadb-admin --user=$${MARIADB_USER} --password=$${MARIADB_PASSWORD} --host=localhost ping"
+          initialDelaySeconds: 30   
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 6
+        volumeMounts:
+        - name: db-data
+          mountPath: /var/lib/mysql
+          
+  volumeClaimTemplates:
+  - metadata:
+      name: db-data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: managed-csi
+      resources:
+        requests:
+          storage: 1Gi
+
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Delete
+    whenScaled: Delete
