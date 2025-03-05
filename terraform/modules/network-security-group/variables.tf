@@ -14,7 +14,7 @@ variable "name" {
 }
 
 variable "associated_subnets" {
-  description = "List of subnet IDs to associate with this network security group."
+  description = "Optional. List of subnet IDs to associate with this network security group."
   type        = map(string)
   default     = {}
 }

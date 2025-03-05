@@ -11,7 +11,7 @@ module "resource_group" {
   source = "./modules/resource-group"
   enable = local.install_base
 
-  name     = "${local.default_tags.project}-rg"
+  name     = "terraform"
   location = local.location
   tags = {
     created-by = "terraform"
@@ -94,7 +94,7 @@ module "key_vaults" {
     },
     {
       name                       = "kv2"
-      sku_name                   = "premium"
+      sku_name                   = "standard"
       purge_protection_enabled   = false
       soft_delete_retention_days = 7
       enabled_for_deployment     = true
